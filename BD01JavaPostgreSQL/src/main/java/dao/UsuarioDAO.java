@@ -3,165 +3,65 @@ package dao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
 import model.Usuario;
 
 public class UsuarioDAO extends DAO {
+	public UsuarioDAO() { super(); conectar(); }
+	public void finalize() { close(); }
 	
-	public UsuarioDAO() {
-		super();
-		conectar();
-	}
-
-	public void finalize() {
-		close();
-	}
-	
-	
-	public boolean insert(Usuario usuario) {
-		boolean status = false;
-		try {  
-			Statement st = conexao.createStatement();
-			String sql = "INSERT INTO usuario (codigo, login, senha, sexo) "
-				       + "VALUES ("+usuario.getCodigo()+ ", '" + usuario.getLogin() + "', '"  
-				       + usuario.getSenha() + "', '" + usuario.getSexo() + "');";
-			System.out.println(sql);
-			st.executeUpdate(sql);
-			st.close();
-			status = true;
-		} catch (SQLException u) {  
-			throw new RuntimeException(u);
-		}
-		return status;
-	}
-
-	
-	public Usuario get(int codigo) {
-		Usuario usuario = null;
-		
-		try {
-			Statement st = conexao.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-			String sql = "SELECT * FROM produto WHERE id=" + codigo;
-			System.out.println(sql);
-			ResultSet rs = st.executeQuery(sql);	
-	        if(rs.next()){            
-	        	 usuario = new Usuario(rs.getInt("codigo"), rs.getString("login"), rs.getString("senha"), rs.getString("sexo").charAt(0));
-	        }
+	public boolean insert(Usuario jogador) {
+	    boolean status = false;
+	    try {  
+	        Statement st = conexao.createStatement();
+	        // Não enviamos o 'id', o Postgres cria o próximo automaticamente
+	        String sql = "INSERT INTO jogadores (numero, nome, time, posicao) "
+	                   + "VALUES (" + jogador.getNumero() + ", '" + jogador.getNome() + "', '"  
+	                   + jogador.getTime() + "', '" + jogador.getPosicao() + "');";
+	        st.executeUpdate(sql);
 	        st.close();
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-		}
-		return usuario;
-	}
-	
-	
-	public List<Usuario> get() {
-		return get("");
+	        status = true;
+	    } catch (SQLException u) { throw new RuntimeException(u); }
+	    return status;
 	}
 
-	
-	public List<Usuario> getOrderByCodigo() {
-		return get("codigo");		
-	}
-	
-	
-	public List<Usuario> getOrderByLogin() {
-		return get("login");		
-	}
-	
-	
-	public List<Usuario> getOrderBySexo() {
-		return get("sexo");		
-	}
-	
-	
-	private List<Usuario> get(String orderBy) {	
-	
-		List<Usuario> usuarios = new ArrayList<Usuario>();
-		
+	public List<Usuario> get() {	
+		List<Usuario> jogadores = new ArrayList<Usuario>();
 		try {
-			Statement st = conexao.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-			String sql = "SELECT * FROM usuario" + ((orderBy.trim().length() == 0) ? "" : (" ORDER BY " + orderBy));
-			System.out.println(sql);
+			Statement st = conexao.createStatement();
+			String sql = "SELECT * FROM jogadores ORDER BY numero";
 			ResultSet rs = st.executeQuery(sql);	           
-	        while(rs.next()) {	            	
-	        	Usuario u = new Usuario(rs.getInt("codigo"), rs.getString("login"), rs.getString("senha"), rs.getString("sexo").charAt(0));
-	            usuarios.add(u);
-	        }
-	        st.close();
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-		}
-		return usuarios;
+			while(rs.next()) {	            	
+				Usuario j = new Usuario(rs.getInt("numero"), rs.getString("nome"), rs.getString("time"), rs.getString("posicao"));
+				jogadores.add(j);
+			}
+			st.close();
+		} catch (Exception e) { System.err.println(e.getMessage()); }
+		return jogadores;
 	}
 
-
-	public List<Usuario> getSexoMasculino() {
-		List<Usuario> usuarios = new ArrayList<Usuario>();
-		
-		try {
-			Statement st = conexao.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-			String sql = "SELECT * FROM usuario WHERE usuario.sexo LIKE 'M'";
-			System.out.println(sql);
-			ResultSet rs = st.executeQuery(sql);	           
-	        while(rs.next()) {	            	
-	        	Usuario u = new Usuario(rs.getInt("codigo"), rs.getString("login"), rs.getString("senha"), rs.getString("sexo").charAt(0));
-	            usuarios.add(u);
-	        }
-	        st.close();
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-		}
-		return usuarios;
-	}
-	
-	
-	public boolean update(Usuario usuario) {
+	public boolean update(Usuario jogador) {
 		boolean status = false;
 		try {  
 			Statement st = conexao.createStatement();
-			String sql = "UPDATE usuario SET login = '" + usuario.getLogin() + "', senha = '"  
-				       + usuario.getSenha() + "', sexo = '" + usuario.getSexo() + "'"
-					   + " WHERE codigo = " + usuario.getCodigo();
-			System.out.println(sql);
+			String sql = "UPDATE jogadores SET nome = '" + jogador.getNome() + "', time = '"  
+				       + jogador.getTime() + "', posicao = '" + jogador.getPosicao() + "'"
+					   + " WHERE numero = " + jogador.getNumero();
 			st.executeUpdate(sql);
 			st.close();
 			status = true;
-		} catch (SQLException u) {  
-			throw new RuntimeException(u);
-		}
+		} catch (SQLException u) { throw new RuntimeException(u); }
 		return status;
 	}
 	
-	public boolean delete(int codigo) {
+	public boolean delete(int numero) {
 		boolean status = false;
 		try {  
 			Statement st = conexao.createStatement();
-			String sql = "DELETE FROM usuario WHERE codigo = " + codigo;
-			System.out.println(sql);
+			String sql = "DELETE FROM jogadores WHERE numero = " + numero;
 			st.executeUpdate(sql);
 			st.close();
 			status = true;
-		} catch (SQLException u) {  
-			throw new RuntimeException(u);
-		}
+		} catch (SQLException u) { throw new RuntimeException(u); }
 		return status;
 	}
-	
-	
-	public boolean autenticar(String login, String senha) {
-		boolean resp = false;
-		
-		try {
-			Statement st = conexao.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-			String sql = "SELECT * FROM usuario WHERE login LIKE '" + login + "' AND senha LIKE '" + senha  + "'";
-			System.out.println(sql);
-			ResultSet rs = st.executeQuery(sql);
-			resp = rs.next();
-	        st.close();
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-		}
-		return resp;
-	}	
 }

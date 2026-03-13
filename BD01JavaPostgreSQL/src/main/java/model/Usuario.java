@@ -1,59 +1,37 @@
 package model;
 
 public class Usuario {
-	private int codigo;
-	private String login;
-	private String senha;
-	private char sexo;
+	private int id;
+	private int numero;
+	private String nome;
+	private String time;
+	private String posicao;
 	
 	public Usuario() {
-		this.codigo = -1;
-		this.login = "";
-		this.senha = "";
-		this.sexo = '*';
+		this.numero = -1;
+		this.nome = "";
+		this.time = "";
+		this.posicao = "";
 	}
 	
-	public Usuario(int codigo, String login, String senha, char sexo) {
-		this.codigo = codigo;
-		this.login = login;
-		this.senha = senha;
-		this.sexo = sexo;
+	public Usuario(int numero, String nome, String time, String posicao) {
+		this.numero = numero;
+		this.nome = nome;
+		this.time = time;
+		this.posicao = posicao;
 	}
 
-	public int getCodigo() {
-		return codigo;
-	}
-
-	public void setCodigo(int codigo) {
-		this.codigo = codigo;
-	}
-
-	public String getLogin() {
-		return login;
-	}
-
-	public void setLogin(String login) {
-		this.login = login;
-	}
-
-	public String getSenha() {
-		return senha;
-	}
-
-	public void setSenha(String senha) {
-		this.senha = senha;
-	}
-
-	public char getSexo() {
-		return sexo;
-	}
-
-	public void setSexo(char sexo) {
-		this.sexo = sexo;
-	}
+	public int getNumero() { return numero; }
+	public void setNumero(int numero) { this.numero = numero; }
+	public String getNome() { return nome; }
+	public void setNome(String nome) { this.nome = nome; }
+	public String getTime() { return time; }
+	public void setTime(String time) { this.time = time; }
+	public String getPosicao() { return posicao; }
+	public void setPosicao(String posicao) { this.posicao = posicao; }
 
 	@Override
 	public String toString() {
-		return "Usuario [codigo=" + codigo + ", login=" + login + ", senha=" + senha + ", sexo=" + sexo + "]";
+		return "Jogador [numero=" + numero + ", nome=" + nome + ", time=" + time + ", posicao=" + posicao + "]";
 	}	
 }
