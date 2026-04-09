@@ -1,30 +1,27 @@
 package app;
 
 import static spark.Spark.*;
-import service.ProdutoService;
-
+import service.JogadorService;
 
 public class Aplicacao {
 	
-	private static ProdutoService produtoService = new ProdutoService();
+	private static JogadorService jogadorService = new JogadorService();
 	
     public static void main(String[] args) {
         port(6789);
         
         staticFiles.location("/public");
         
-        post("/produto/insert", (request, response) -> produtoService.insert(request, response));
+        post("/jogador/insert", (request, response) -> jogadorService.insert(request, response));
 
-        get("/produto/:id", (request, response) -> produtoService.get(request, response));
+        get("/jogador/:id", (request, response) -> jogadorService.get(request, response));
         
-        get("/produto/list/:orderby", (request, response) -> produtoService.getAll(request, response));
+        get("/jogador/list/:orderby", (request, response) -> jogadorService.getAll(request, response));
 
-        get("/produto/update/:id", (request, response) -> produtoService.getToUpdate(request, response));
+        get("/jogador/update/:id", (request, response) -> jogadorService.getToUpdate(request, response));
         
-        post("/produto/update/:id", (request, response) -> produtoService.update(request, response));
+        post("/jogador/update/:id", (request, response) -> jogadorService.update(request, response));
            
-        get("/produto/delete/:id", (request, response) -> produtoService.delete(request, response));
-
-             
+        get("/jogador/delete/:id", (request, response) -> jogadorService.delete(request, response));
     }
 }
